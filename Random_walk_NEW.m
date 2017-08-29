@@ -1,0 +1,63 @@
+% 12.05.2017 by UY...
+% This function creates random walks
+
+function [RWs]=Random_walk_NEW(Dim,max_iter,lb, ub,antlion,current_iter,X)
+if size(lb,1) ==1 && size(lb,2)==1 %Check if the bounds are scalar
+    lb=ones(1,Dim)*lb;
+    ub=ones(1,Dim)*ub;
+end
+
+if size(lb,1) > size(lb,2) %Check if boundary vectors are horizontal or vertical
+    lb=lb';
+    ub=ub';
+end
+
+I=1; % I is the ratio in Equations (2.10) and (2.11)
+% Her seferinde tüm if koþullarýný sorgulamasýna gerek yok, bir tek if koþulu gerçekleþir. 
+% Dolayýsýyla I güncellemesi elseif merdiveni haline getirildi.
+		if current_iter>max_iter*(0.95)
+			I=1+1000000*(current_iter/max_iter);
+            elseif current_iter>max_iter*(0.9)
+				I=1+100000*(current_iter/max_iter);
+				elseif current_iter>max_iter*(0.75) %-->0.75
+					I=1+10000*(current_iter/max_iter);
+					elseif current_iter>max_iter*(0.5) %-->0.5
+						I=1+1000*(current_iter/max_iter); 
+						elseif current_iter>max_iter*(0.1) %-->0.1
+							I=1+100*(current_iter/max_iter);
+		end
+       
+        % Dicrease boundaries to converge towards antlion
+lb=lb/(I); % Equation (2.10) in the paper
+ub=ub/(I); % Equation (2.11) in the paper
+
+% Move the interval of [lb ub] around the antlion [lb+anlion ub+antlion]
+        option = rand;
+		if option>0.75
+			lb = antlion + lb; % Equation (2.8) in the paper
+            ub = antlion + ub;% Equation (2.9) in the paper
+        elseif option>0.5
+			ub = antlion - ub; % Equation (2.9) in the paper
+			lb = antlion - lb; % Equation (2.8) in the paper
+        elseif option>0.25
+            ub = -antlion + ub; % Equation (2.9) in the paper
+			lb = -antlion + lb; % Equation (2.8) in the paper
+        else
+            ub = -antlion - ub; % Equation (2.9) in the paper
+			lb = -antlion - lb; % Equation (2.8) in the paper            
+        end
+        
+    a=min(X);
+    b=max(X);
+% This function creates n random walks and normalize accroding to lb and ub
+% vectors 
+for i=1:Dim
+% % %     X = [0 cumsum(2*(rand(max_iter,1)>0.5)-1)']; % Equation (2.1) in the paper
+    %[a b]--->[c d]
+
+    c=lb(i);
+    d=ub(i);      
+    X_norm=((X-a).*(d-c))./(b-a)+c; % Equation (2.7) in the paper
+    RWs(:,i)=X_norm;
+end
+
