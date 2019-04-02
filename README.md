@@ -1,2 +1,2 @@
 # PMS-with-IALOT
-IALOT and other heursitic algorithm for Parallel Machine Scheduling (PMS)
+IALOT and other heuristic algorithm for Parallel Machine Scheduling (PMS)
